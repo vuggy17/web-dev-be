@@ -1,0 +1,1871 @@
+swagger: "2.0"
+info:
+  description: "Api document for beauti-blog project."
+  version: "1.0.0"
+  title: "Swagger Beauti Shop"
+host: "45.119.85.106:8080"
+basePath: "/api"
+
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: authorization
+    in: header
+tags:
+  - name: "user"
+    description: "Admin manage for user"
+  - name: "blog"
+    description: "Admin manage for blog"
+  - name: "media"
+    description: "Admin manage for media"
+  - name: "category"
+    description: "Admin manage for category"
+  - name: "tag"
+    description: "Admin manage for tag"
+  - name: "banner"
+    description: "Admin manage for banner"
+  - name: "slide"
+    description: "Admin manage for slide and slide's location"
+  - name: "product"
+    description: "Admin manage for product"
+  - name: "order"
+    description: "Admin manage for order"
+  - name: "landing"
+    description: "Public apis, use on landing pages"
+  - name: "subscribe"
+    description: "Admin manage for subscribe"
+schemes:
+  - "http"
+  - "https"
+paths:
+  /users/init:
+    get:
+      tags:
+        - "user"
+      summary: "Init user data (admin,...)"
+      description: "Init user"
+      parameters:
+        - in: "query"
+          name: "token"
+          description: "Token"
+          required: true
+          type: "string"
+      responses:
+        200:
+          description: "Init data successfully!"
+  /users/login:
+    post:
+      tags:
+        - "user"
+      summary: "Login for user (admin, blogger)"
+      description: "Login"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: Login information"
+          required: true
+          schema:
+            properties:
+              username:
+                type: "string"
+              password:
+                type: "string"
+
+      responses:
+        200:
+          description: "Login success with token"
+        401:
+          description: "Login failed"
+  /users/create:
+    post:
+      tags:
+        - "user"
+      summary: "Create user (admin, blogger)"
+      description: "Create an user"
+      security:
+        - Bearer: []
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Account data"
+          required: true
+          schema:
+            properties:
+              username:
+                type: "string"
+              password:
+                type: "string"
+              role:
+                type: "string"
+                enum: ["blogger", "admin"]
+              name:
+                type: "string"
+              email:
+                type: "string"
+      responses:
+        200:
+          description: "Create account success"
+        400:
+          description: "Bad request"
+  /users:
+    patch:
+      tags:
+        - "user"
+      summary: "Update profile (admin only)"
+      security:
+        - Bearer: []
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "About data"
+          required: true
+          schema:
+            properties:
+              about:
+                type: "string"
+              description:
+                type: "string"
+              name:
+                type: "string"
+              avatar:
+                type: "string"
+                description: "media file name"
+      responses:
+        200:
+          description: "Edit account success"
+        400:
+          description: "Bad request"
+  /media/upload:
+    post:
+      tags:
+        - "media"
+      summary: "Upload media"
+      description: "Upload media to server: accept image only"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "file"
+          in: "formData"
+          description: "file here"
+          required: true
+          type: "file"
+      responses:
+        200:
+          description: "Upload success"
+        400:
+          description: "Bad request"
+  /media/{filename}:
+    patch:
+      tags:
+        - "media"
+      summary: "Edit media infor"
+      description: "Only alt and title can be changed"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "filename"
+          in: "path"
+          description: "filename here"
+          required: true
+          type: "string"
+        - name: "body"
+          in: "body"
+          description: "edit infor here"
+          required: true
+          schema:
+            properties:
+              alt:
+                description: "alt text"
+              title:
+                description: "file title"
+      responses:
+        200:
+          description: "Edit success"
+        400:
+          description: "Bad request"
+        404:
+          description: "Not found"
+    delete:
+      tags:
+        - "media"
+      summary: "Delete media"
+      description: "Delete media"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "filename"
+          in: "path"
+          description: "file here"
+          type: "string"
+          required: true
+      responses:
+        200:
+          description: "Delete success"
+        400:
+          description: "Bad request"
+    get:
+      tags:
+        - "media"
+      summary: "Get media"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "filename"
+          in: "path"
+          type: "string"
+          required: true
+      responses:
+        200:
+          description: "Find success"
+        404:
+          description: "Not found"
+        400:
+          description: "Bad request"
+  /media:
+    get:
+      tags:
+        - "media"
+      summary: "Search media"
+      security:
+        - Bearer: []
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          type: number
+        - name: page
+          in: query
+          required: false
+          type: number
+        - name: query
+          in: query
+          required: false
+          type: string
+      responses:
+        200:
+          description: "Search success"
+        400:
+          description: "Bad request"
+  /category/create:
+    post:
+      tags:
+        - "category"
+      summary: "Add category"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "body"
+          in: "body"
+          required: true
+          schema:
+            properties:
+              name:
+                description: "name"
+              description:
+                description: "description"
+              parent_id:
+                description: "parent_id"
+                type: "number"
+              allow_sub:
+                description: "whether or not has children"
+              path:
+                description: "path name"
+      responses:
+        200:
+          description: "Create success"
+        400:
+          description: "Bad request"
+  /category/{id}:
+    patch:
+      tags:
+        - "category"
+      summary: "Edit category"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "id"
+          in: "path"
+          type: "string"
+          required: true
+        - name: "body"
+          in: "body"
+          required: true
+          schema:
+            properties:
+              name:
+                description: "name"
+              description:
+                description: "description"
+              parent_id:
+                description: "parent_id"
+                type: "number"
+              allow_sub:
+                description: "whether or not has children"
+              path:
+                description: "path name"
+      responses:
+        200:
+          description: "Edit success"
+        400:
+          description: "Bad request"
+    get:
+      tags:
+        - "category"
+      summary: "Get category"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "id"
+          in: "path"
+          type: "string"
+          required: true
+      responses:
+        200:
+          description: "Find success"
+        404:
+          description: "Not found"
+        400:
+          description: "Bad request"
+    delete:
+      tags:
+        - "category"
+      summary: "Delete category"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "id"
+          in: "path"
+          type: "string"
+          required: true
+      responses:
+        200:
+          description: "Delete success"
+        404:
+          description: "Not found"
+        400:
+          description: "Bad request"
+  /category:
+    get:
+      tags:
+        - "category"
+      summary: "Search category"
+      security:
+        - Bearer: []
+      parameters:
+        - name: query
+          in: query
+          required: false
+          type: string
+      responses:
+        200:
+          description: "Search success"
+        400:
+          description: "Bad request"
+  /tag/create:
+    post:
+      tags:
+        - "tag"
+      summary: "Add tag"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "body"
+          in: "body"
+          required: true
+          schema:
+            properties:
+              name:
+                description: "name"
+              description:
+                description: "description"
+      responses:
+        200:
+          description: "Create success"
+        400:
+          description: "Bad request"
+  /tag/{id}:
+    patch:
+      tags:
+        - "tag"
+      summary: "Edit tag"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "id"
+          in: "path"
+          type: "string"
+          required: true
+        - name: "body"
+          in: "body"
+          required: true
+          schema:
+            properties:
+              name:
+                description: "name"
+              description:
+                description: "description"
+      responses:
+        200:
+          description: "Edit success"
+        400:
+          description: "Bad request"
+    get:
+      tags:
+        - "tag"
+      summary: "Get tag"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "id"
+          in: "path"
+          type: "string"
+          required: true
+      responses:
+        200:
+          description: "Find success"
+        404:
+          description: "Not found"
+        400:
+          description: "Bad request"
+    delete:
+      tags:
+        - "tag"
+      summary: "Delete tag"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "id"
+          in: "path"
+          type: "string"
+          required: true
+      responses:
+        200:
+          description: "Delete success"
+        404:
+          description: "Not found"
+        400:
+          description: "Bad request"
+  /tag:
+    get:
+      tags:
+        - "tag"
+      summary: "Search tag"
+      security:
+        - Bearer: []
+      parameters:
+        - name: query
+          in: query
+          required: false
+          type: string
+      responses:
+        200:
+          description: "Search success"
+        400:
+          description: "Bad request"
+  /blog/create:
+    post:
+      tags:
+        - "blog"
+      summary: "Add new blog"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "body"
+          in: "body"
+          required: true
+          schema:
+            properties:
+              title:
+                description: "title of blog"
+              description:
+                description: "description"
+              status:
+                type: string
+                enum: ["edit", "publish", "draft", "deleted"]
+                description: "status of blog"
+              path:
+                description: "path of blog, ex: this-is-the-path"
+              content:
+                description: "content of blog"
+              visible:
+                type: boolean
+                description: "whether or not visible to customer"
+              feature_image:
+                description: "file image name, ex: this-is-the-file.jpg"
+              allow_comment:
+                type: boolean
+                description: "whether or not allow comment"
+              stick_to_top:
+                type: boolean
+                description: "whether or not stick to top page"
+              category:
+                type: array
+                items:
+                  type: number
+                description: "an array of category's id, ex: [1,2,3]"
+              tag:
+                type: array
+                items:
+                  type: number
+                  description: "and array of tag's id, ex: [1,2,3]"
+              product:
+                type: array
+                items:
+                  type: number
+                  description: "and array of product's id, ex: [1,2,3]"
+      responses:
+        200:
+          description: "Create success"
+        400:
+          description: "Bad request"
+  /blog/{id}:
+    patch:
+      tags:
+        - "blog"
+      summary: "Edit blog"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "id"
+          in: path
+          type: number
+          required: true
+        - name: "body"
+          in: "body"
+          required: true
+          schema:
+            properties:
+              title:
+                description: "title of blog"
+              description:
+                description: "description"
+              status:
+                type: string
+                enum: ["edit", "publish", "draft", "deleted"]
+                description: "status of blog"
+              path:
+                description: "path of blog, ex: this-is-the-path"
+              content:
+                description: "content of blog"
+              visible:
+                type: boolean
+                description: "whether or not visible to customer"
+              feature_image:
+                description: "file image name, ex: this-is-the-file.jpg"
+              allow_comment:
+                type: boolean
+                description: "whether or not allow comment"
+              stick_to_top:
+                type: boolean
+                description: "whether or not stick to top page"
+              category:
+                type: array
+                items:
+                  type: number
+                description: "an array of category's id, ex: [1,2,3]"
+              tag:
+                type: array
+                items:
+                  type: number
+                  description: "and array of tag's id, ex: [1,2,3]"
+              product:
+                type: array
+                items:
+                  type: number
+                  description: "and array of product's id, ex: [1,2,3]"
+      responses:
+        200:
+          description: "Edit success"
+        400:
+          description: "Bad request"
+    get:
+      tags:
+        - "blog"
+      summary: "Get blog"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "id"
+          in: "path"
+          type: number
+          required: true
+
+      responses:
+        200:
+          description: "Get success"
+        400:
+          description: "Bad request"
+    delete:
+      tags:
+        - "blog"
+      summary: "Delete blog"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "id"
+          in: "path"
+          type: number
+          required: true
+
+      responses:
+        200:
+          description: "Edit success"
+        400:
+          description: "Bad request"
+
+  /blog:
+    get:
+      tags:
+        - "blog"
+      summary: "Search blog"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "categoryId"
+          in: "query"
+          type: number
+        - name: "tagId"
+          in: query
+          type: number
+        - name: "query"
+          in: query
+          type: number
+        - name: "status"
+          in: query
+          type: string
+
+      responses:
+        200:
+          description: "Get success"
+        400:
+          description: "Bad request"
+  /banner/create:
+    post:
+      tags:
+        - "banner"
+      summary: "Create new banner"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "body"
+          in: "body"
+          required: true
+          schema:
+            properties:
+              type:
+                type: string
+                enum: ["image", "cta"]
+                description: "type of banner"
+              media_name:
+                type: string
+                description: "media file name"
+              title:
+                type: string
+                description: "title of banner"
+              sub_title:
+                description: "sub title"
+              content:
+                description: "content"
+              button_text:
+                description: "button text"
+              button_url:
+                description: "button url"
+      responses:
+        200:
+          description: "Create success"
+        400:
+          description: "Bad request"
+  /banner/{id}:
+    get:
+      tags:
+        - "banner"
+      summary: "Get a banner by id"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "id"
+          in: "path"
+          type: number
+          description: "id of banner"
+          required: true
+      responses:
+        200:
+          description: "Get success"
+        400:
+          description: "Bad request"
+    delete:
+      tags:
+        - "banner"
+      summary: "Delete a banner by id"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "id"
+          in: "path"
+          type: number
+          description: "id of banner"
+          required: true
+      responses:
+        200:
+          description: "Delete success"
+        400:
+          description: "Bad request"
+    patch:
+      tags:
+        - "banner"
+      summary: "Edit a banner"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "id"
+          in: "path"
+          type: number
+          description: "id of banner"
+          required: true
+        - name: "body"
+          in: "body"
+          required: true
+          schema:
+            properties:
+              type:
+                type: string
+                enum: ["image", "cta"]
+                description: "type of banner"
+              media_name:
+                type: string
+                description: "media file name"
+              title:
+                type: string
+                description: "title of banner"
+              sub_title:
+                description: "sub title"
+              content:
+                description: "content"
+              button_text:
+                description: "button text"
+              button_url:
+                description: "button url"
+      responses:
+        200:
+          description: "Edit success"
+        400:
+          description: "Bad request"
+  /banner:
+    get:
+      tags:
+        - "banner"
+      summary: "Get list banner "
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: "Get success"
+        400:
+          description: "Bad request"
+  /slide/location/create:
+    post:
+      tags:
+        - "slide"
+      summary: "Create new slide location"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "body"
+          in: "body"
+          required: true
+          schema:
+            properties:
+              name:
+                type: string
+                description: "name of location"
+      responses:
+        200:
+          description: "Create success"
+        400:
+          description: "Bad request"
+  /slide/location/{id}:
+    delete:
+      tags:
+        - "slide"
+      summary: "Delete a slide location"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "id"
+          in: "path"
+          type: number
+          description: "id of location"
+          required: true
+      responses:
+        200:
+          description: "Delete success"
+        400:
+          description: "Bad request"
+  /slide/location:
+    get:
+      tags:
+        - "slide"
+      summary: "Get list location"
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: "Get success"
+        400:
+          description: "Bad request"
+  /slide/create:
+    post:
+      tags:
+        - "slide"
+      summary: "Create new slide"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "body"
+          in: "body"
+          required: true
+          schema:
+            properties:
+              location_id:
+                type: string
+                description: "id of location want to show"
+              name:
+                type: string
+                description: "name of slide"
+              is_visible:
+                type: boolean
+                description: "whether or not visible to the user"
+      responses:
+        200:
+          description: "Create success"
+        400:
+          description: "Bad request"
+  /slide/{id}:
+    get:
+      tags:
+        - "slide"
+      summary: "Get a slide information"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "id"
+          in: "path"
+          type: number
+          required: true
+      responses:
+        200:
+          description: "Get success"
+        400:
+          description: "Bad request"
+    delete:
+      tags:
+        - "slide"
+      summary: "Delete a slide"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "id"
+          in: "path"
+          type: number
+          required: true
+      responses:
+        200:
+          description: "Delete success"
+        400:
+          description: "Bad request"
+    patch:
+      tags:
+        - "slide"
+      summary: "Edit a slide"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "id"
+          in: "path"
+          type: number
+          required: true
+        - name: "body"
+          in: "body"
+          required: true
+          schema:
+            properties:
+              name:
+                type: string
+                description: "name of slide"
+              location_id:
+                type: string
+                description: "id of location want to show"
+              is_visible:
+                type: boolean
+                description: "whether or not visible to the user"
+      responses:
+        200:
+          description: "Edit success"
+        400:
+          description: "Bad request"
+  /slide:
+    get:
+      tags:
+        - "slide"
+      summary: "Get list of slide"
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: "Get success"
+        400:
+          description: "Bad request"
+  /slide/add-banner/{id}:
+    post:
+      tags:
+        - "slide"
+      summary: "Add banner to slide"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "id"
+          in: path
+          required: true
+          type: number
+          description: "slide id"
+        - name: "body"
+          in: "body"
+          required: true
+          schema:
+            properties:
+              bannerId:
+                type: number
+                description: "id of banner want to add to slide"
+      responses:
+        200:
+          description: "Add success"
+        400:
+          description: "Bad request"
+  /slide/remove-banner/{id}:
+    delete:
+      tags:
+        - "slide"
+      summary: "Add banner to slide"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "id"
+          in: path
+          required: true
+          type: number
+          description: "slide id"
+        - name: "body"
+          in: "body"
+          required: true
+          schema:
+            properties:
+              bannerId:
+                type: number
+                description: "id of banner want to remove from slide"
+      responses:
+        200:
+          description: "Remove success"
+        400:
+          description: "Bad request"
+  /slide/update-banner/{id}:
+    post:
+      tags:
+        - "slide"
+      summary: "Update banner of slide"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "id"
+          in: path
+          required: true
+          type: number
+          description: "slide id"
+        - name: "body"
+          in: "body"
+          required: true
+          schema:
+            properties:
+              bannerId:
+                type: array
+                description: "array of banner's id want to update to slide"
+                items:
+                  type: number
+      responses:
+        200:
+          description: "Update success"
+        400:
+          description: "Bad request"
+  /comment/{id}:
+    delete:
+      tags:
+        - "comment"
+      summary: "Delete a comment"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "id"
+          in: "path"
+          type: number
+          required: true
+      responses:
+        200:
+          description: "Delete success"
+        400:
+          description: "Bad request"
+    patch:
+      tags:
+        - "comment"
+      summary: "Edit a comment"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "id"
+          in: "path"
+          type: number
+          required: true
+        - name: "body"
+          in: "body"
+          required: true
+          schema:
+            properties:
+              email:
+                description: "email"
+              name:
+                description: "name"
+              phone:
+                description: "phone"
+              content:
+                description: "content"
+              reply:
+                description: "reply by admin"
+              is_show:
+                description: "is accepted to show"
+                type: boolean
+      responses:
+        200:
+          description: "Edit success"
+        400:
+          description: "Bad request"
+  /comment/all:
+    get:
+      tags:
+        - "comment"
+      summary: "Get all comment group by blog"
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: "Get success"
+        400:
+          description: "Bad request"
+  /comment:
+    get:
+      tags:
+        - "comment"
+      summary: "Get all comment of blog"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "blogId"
+          in: "query"
+          type: number
+          required: true
+        - name: "is_show"
+          in: "query"
+          type: boolean
+          required: false
+      responses:
+        200:
+          description: "Delete success"
+        400:
+          description: "Bad request"
+  /product/category/create:
+    post:
+      tags:
+        - "product"
+      summary: "Create new product category"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "body"
+          in: "body"
+          required: true
+          schema:
+            properties:
+              name:
+                type: string
+                description: "name"
+              description:
+                type: string
+                description: "description"
+              parent_id:
+                type: number
+                description: "parent id"
+              allow_sub:
+                type: boolean
+                description: "allow_sub"
+              path:
+                type: string
+                description: "path"
+      responses:
+        200:
+          description: "Create success"
+        400:
+          description: "Bad request"
+  /product/category/{id}:
+    patch:
+      tags:
+        - "product"
+      summary: "Edit product category"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "query"
+          in: path
+          type: string
+          required: true
+        - name: "body"
+          in: "body"
+          required: true
+          schema:
+            properties:
+              name:
+                type: string
+                description: "name"
+              description:
+                type: string
+                description: "description"
+              parent_id:
+                type: number
+                description: "parent id"
+              allow_sub:
+                type: boolean
+                description: "allow_sub"
+              path:
+                type: string
+                description: "path"
+      responses:
+        200:
+          description: "Edit success"
+        400:
+          description: "Bad request"
+    get:
+      tags:
+        - "product"
+      summary: "Get product category detail"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "query"
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: "Get success"
+        400:
+          description: "Bad request"
+    delete:
+      tags:
+        - "product"
+      summary: "Delete product category"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "query"
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: "Delete success"
+        400:
+          description: "Bad request"
+  /product/category:
+    get:
+      tags:
+        - "product"
+      summary: "Search product category"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "query"
+          in: query
+          type: string
+      responses:
+        200:
+          description: "Get success"
+        400:
+          description: "Bad request"
+  /product/create:
+    post:
+      tags:
+        - "product"
+      summary: "Create new product"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "body"
+          in: "body"
+          required: true
+          schema:
+            properties:
+              name:
+                type: string
+                description: "name"
+              description:
+                type: string
+                description: "description"
+              category_id:
+                type: number
+                description: "category id"
+              media:
+                type: array
+                items:
+                  type: number
+                description: "list of media id"
+              thumbnail:
+                type: string
+                description: "file name of media"
+              price:
+                type: number
+              is_on_sale:
+                type: boolean
+              discount:
+                type: number
+                description: "min 0 max 1"
+              maxDiscount:
+                type: number
+                description: "max discount"
+              SKU:
+                type: string
+                description: "inventory number"
+              is_track_inventory:
+                type: boolean
+                description: "wheter tracking inventory"
+              is_in_stock:
+                type: boolean
+              is_publish:
+                type: boolean
+              brand:
+                type: string
+              shipping_infor:
+                type: string
+              return_infor:
+                type: string
+              manual_infor:
+                type: string
+              deal_of_week:
+                type: boolean
+      responses:
+        200:
+          description: "Create success"
+        400:
+          description: "Bad request"
+  /product/{id}:
+    patch:
+      tags:
+        - "product"
+      summary: "Edit product"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "id"
+          in: path
+          type: number
+          required: true
+        - name: "body"
+          in: "body"
+          required: true
+          schema:
+            properties:
+              name:
+                type: string
+                description: "name"
+              description:
+                type: string
+                description: "description"
+              category_id:
+                type: number
+                description: "category id"
+              media:
+                type: array
+                items:
+                  type: number
+                description: "list of media id"
+              thumbnail:
+                type: string
+                description: "file name of media"
+              price:
+                type: number
+              is_on_sale:
+                type: boolean
+              discount:
+                type: number
+                description: "min 0 max 1"
+              SKU:
+                type: string
+                description: "inventory number"
+              is_track_inventory:
+                type: boolean
+                description: "wheter tracking inventory"
+              is_in_stock:
+                type: boolean
+              is_publish:
+                type: boolean
+              brand:
+                type: string
+              shipping_infor:
+                type: string
+              return_infor:
+                type: string
+              manual_infor:
+                type: string
+              deal_of_week:
+                type: boolean
+      responses:
+        200:
+          description: "Edit success"
+        400:
+          description: "Bad request"
+    get:
+      tags:
+        - "product"
+      summary: "Get product detail"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "id"
+          in: path
+          type: number
+          required: true
+      responses:
+        200:
+          description: "Get success"
+        400:
+          description: "Bad request"
+    delete:
+      tags:
+        - "product"
+      summary: "Delete product"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "id"
+          in: path
+          type: number
+          required: true
+      responses:
+        200:
+          description: "Delete success"
+        400:
+          description: "Bad request"
+  /product:
+    get:
+      tags:
+        - "product"
+      summary: "Search product"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "query"
+          in: query
+          type: string
+        - name: "category"
+          in: query
+          type: string
+      responses:
+        200:
+          description: "Get success"
+        400:
+          description: "Bad request"
+  /product/variant/create:
+    post:
+      tags:
+        - "product"
+      summary: "Create new product's variant"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "body"
+          in: "body"
+          required: true
+          schema:
+            properties:
+              name:
+                type: string
+                description: "name"
+              description:
+                type: string
+                description: "description"
+              product_id:
+                type: number
+                description: "product id"
+              price:
+                type: number
+                description: "price of this variant"
+      responses:
+        200:
+          description: "Create success"
+        400:
+          description: "Bad request"
+  /product/variant/{id}:
+    patch:
+      tags:
+        - "product"
+      summary: "Edit product's variant"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "body"
+          in: "body"
+          required: true
+          schema:
+            properties:
+              name:
+                type: string
+                description: "name"
+              description:
+                type: string
+                description: "description"
+              price:
+                type: number
+                description: "price of this variant"
+      responses:
+        200:
+          description: "Edit success"
+        400:
+          description: "Bad request"
+    delete:
+      tags:
+        - "product"
+      summary: "Delete product's variant"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "id"
+          in: path
+          type: number
+          required: true
+      responses:
+        200:
+          description: "Edit success"
+        400:
+          description: "Bad request"
+  /landing/slide/{location}:
+    get:
+      tags:
+        - "landing"
+      summary: "Get slide by location"
+      parameters:
+        - name: "location"
+          in: path
+          required: true
+          type: string
+          description: "location name"
+      responses:
+        200:
+          description: "Get success"
+        400:
+          description: "Bad request"
+  /landing/blog:
+    get:
+      tags:
+        - "landing"
+      summary: "Get all blog"
+      parameters:
+        - name: "category"
+          in: query
+          type: string
+          description: "category path or id"
+        - name: "tag"
+          in: query
+          type: string
+          description: "tag path or id"
+      responses:
+        200:
+          description: "Get success"
+        400:
+          description: "Bad request"
+  /landing/blog/new:
+    get:
+      tags:
+        - "landing"
+      summary: "Get lasted blogs"
+      parameters:
+        - name: "limit"
+          in: query
+          type: number
+          description: "default is 10"
+      responses:
+        200:
+          description: "Get success"
+        400:
+          description: "Bad request"
+  /landing/blog/{query}:
+    get:
+      tags:
+        - "landing"
+      summary: "Get blog details"
+      parameters:
+        - name: "query"
+          in: path
+          type: string
+          required: true
+          description: "blog id or path"
+      responses:
+        200:
+          description: "Get success"
+        400:
+          description: "Bad request"
+  /landing/preview/{query}:
+    get:
+      tags:
+        - "landing"
+      summary: "Get blog details"
+      parameters:
+        - name: "query"
+          in: path
+          type: string
+          required: true
+          description: "blog id or path"
+      responses:
+        200:
+          description: "Get success"
+        400:
+          description: "Bad request"
+  /landing/blog/{query}/product:
+    get:
+      tags:
+        - "landing"
+      summary: "Get products relate to blog"
+      parameters:
+        - name: "query"
+          in: path
+          type: string
+          required: true
+          description: "blog id or path"
+      responses:
+        200:
+          description: "Get success"
+        400:
+          description: "Bad request"
+  /landing/category:
+    get:
+      tags:
+        - "landing"
+      summary: "Get list category"
+      responses:
+        200:
+          description: "Get success"
+        400:
+          description: "Bad request"
+  /landing/tag:
+    get:
+      tags:
+        - "landing"
+      summary: "Get list tag"
+      responses:
+        200:
+          description: "Get success"
+        400:
+          description: "Bad request"
+  /landing/comment:
+    post:
+      tags:
+        - "landing"
+      summary: "Create comment on post"
+      parameters:
+        - name: "body"
+          in: "body"
+          required: true
+          schema:
+            properties:
+              email:
+                description: "email"
+              name:
+                description: "name"
+              phone:
+                description: "phone"
+              content:
+                description: "content"
+              blogId:
+                description: "blog id"
+                type: number
+      responses:
+        200:
+          description: "Get success"
+        400:
+          description: "Bad request"
+    get:
+      tags:
+        - "landing"
+      summary: "Get comments of post"
+      parameters:
+        - name: "blogId"
+          in: "query"
+          required: true
+          type: number
+      responses:
+        200:
+          description: "Get success"
+        400:
+          description: "Bad request"
+  /landing/order:
+    post:
+      tags:
+        - "landing"
+      summary: "Create order"
+      parameters:
+        - name: "body"
+          in: "body"
+          required: true
+          schema:
+            properties:
+              customer_email:
+                description: "email"
+              customer_name:
+                description: "name"
+              phone:
+                description: "phone"
+              address:
+                description: "content"
+              items:
+                description: "items list"
+                type: array
+                items:
+                  type: object
+                  properties:
+                    product_id:
+                      type: number
+                    variant_id:
+                      type: number
+                    number:
+                      type: number
+      responses:
+        200:
+          description: "Get success"
+        400:
+          description: "Bad request"
+  /landing/about:
+    get:
+      tags:
+        - "landing"
+      summary: "Get about me"
+      responses:
+        200:
+          description: "Get success"
+        400:
+          description: "Bad request"
+  /landing/product:
+    get:
+      tags:
+        - "landing"
+      summary: "Get list product"
+      parameters:
+        - name: "query"
+          in: query
+          type: string
+          description: keyword or name
+        - name: "category"
+          in: query
+          type: string
+          description: category query
+      responses:
+        200:
+          description: "Get success"
+        400:
+          description: "Bad request"
+  /landing/product/{query}:
+    get:
+      tags:
+        - "landing"
+      summary: "Get product detail"
+      parameters:
+        - name: "query"
+          in: path
+          type: string
+          required: true
+          description: query
+      responses:
+        200:
+          description: "Get success"
+        400:
+          description: "Bad request"
+
+  /landing/product-category:
+    get:
+      tags:
+        - "landing"
+      summary: "Get list product category"
+      parameters:
+        - name: "query"
+          in: query
+          type: string
+          description: keyword or name
+      responses:
+        200:
+          description: "Get success"
+        400:
+          description: "Bad request"
+  /landing/product-category/{query}:
+    get:
+      tags:
+        - "landing"
+      summary: "Get product category detail"
+      parameters:
+        - name: "query"
+          in: path
+          type: string
+          required: true
+          description: query
+      responses:
+        200:
+          description: "Get success"
+        400:
+          description: "Bad request"
+  /landing/subscribe:
+    post:
+      tags:
+        - "landing"
+      summary: "Create subscribe"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Subscribe data"
+          required: true
+          schema:
+            properties:
+              name:
+                type: "string"
+              email:
+                type: "string"
+      responses:
+        200:
+          description: "Get success"
+        400:
+          description: "Bad request"
+  /landing/deal-of-week:
+    get:
+      tags:
+        - "landing"
+      summary: "Get list of deal of week product"
+      responses:
+        200:
+          description: "Get success"
+        400:
+          description: "Bad request"
+  /order/{id}:
+    patch:
+      tags:
+        - "order"
+      summary: "Edit order"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "id"
+          in: path
+          type: number
+          required: true
+        - name: "body"
+          in: "body"
+          required: true
+          schema:
+            properties:
+              customer_email:
+                description: "email"
+              customer_name:
+                description: "name"
+              phone:
+                description: "phone"
+              address:
+                description: "content"
+              status:
+                type: string
+                enum: ["pending", "shipping", "success", "cancel", "confirm"]
+      responses:
+        200:
+          description: "Edit success"
+        400:
+          description: "Bad request"
+    get:
+      tags:
+        - "order"
+      summary: "Get order detail"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "id"
+          in: path
+          type: number
+          required: true
+      responses:
+        200:
+          description: "Get success"
+        400:
+          description: "Bad request"
+  /order/confirm/{id}:
+    patch:
+      tags:
+        - "order"
+      summary: "Confirm order"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "id"
+          in: path
+          type: number
+          required: true
+      responses:
+        200:
+          description: "Edit success"
+        400:
+          description: "Bad request"
+
+  /order:
+    get:
+      tags:
+        - "order"
+      summary: "Get order list"
+      security:
+        - Bearer: []
+      parameters:
+        - name: "status"
+          in: query
+          type: string
+        - name: "customer_name"
+          in: query
+          type: string
+        - name: "customer_email"
+          in: query
+          type: string
+      responses:
+        200:
+          description: "Get success"
+        400:
+          description: "Bad request"
+  /subscribe:
+    get:
+      tags:
+        - "subscribe"
+      summary: "Get subscribe list"
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: "Get success"
+        400:
+          description: "Bad request"
+
+  /admin/analytics:
+    get:
+      tags:
+        - "user"
+      summary: "Get admin analytics"
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: "Get success"
+        400:
+          description: "Bad request"
