@@ -16,7 +16,7 @@ WORKDIR /usr/src/app
 COPY --from=builder /usr/src/app/package*.json ./
 RUN npm install --only=production
 
-COPY --from=builder /usr/src/app/dist ./
+COPY --from=builder /usr/src/app/dist/ ./
 
 ENV PORT=3000
 EXPOSE ${PORT}
