@@ -1,24 +1,17 @@
-FROM node:14 as builder
+FROM node:16
 WORKDIR /usr/src/app
 
 COPY package*.json ./
+COPY yarn.lock ./
 
-RUN npm install
+RUN yarn install
 
 COPY . .
 
-RUN npm run build
+RUN yarn build
 
-
-FROM node:14
-WORKDIR /usr/src/app
-
-COPY --from=builder /usr/src/app/package*.json ./
-RUN npm install --only=production
-
-COPY --from=builder /usr/src/app/dist/ ./dist/
 
 ENV PORT=3000
 EXPOSE ${PORT}
 
-CMD node index.js
+CMD yarn start
