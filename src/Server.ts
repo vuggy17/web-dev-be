@@ -39,7 +39,7 @@ if (process.env.NODE_ENV === "development") {
 // Security
 if (process.env.NODE_ENV === "production") {
   app.use(helmet());
-  var whitelist = ["http://45.119.85.106:3000", "http://45.119.85.106:3001", "http://drdongphuong.com", "http://www.drdongphuong.com","https://drdongphuong.com", "https://www.drdongphuong.com", "http://admin.drdongphuong.com", "https://admin.drdongphuong.com", "http://www.admin.drdongphuong.com", "https://www.admin.drdongphuong.com"];
+  const whitelist = ["*"];
   app.use(
     cors({
       origin: whitelist,

@@ -1,4 +1,4 @@
-import "../pre-start";
+// import "../pre-start";
 
 import jwt from "jsonwebtoken";
 import { jwtUser } from "@entities/User";
