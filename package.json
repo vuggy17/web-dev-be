@@ -1,5 +1,5 @@
 {
-  "name": "beauti-blog-BE",
+  "name": "beautify-blog-be",
   "version": "0.0.0",
   "scripts": {
     "build": "./node_modules/.bin/ts-node build.ts",
