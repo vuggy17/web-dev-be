@@ -1,4 +1,4 @@
-import "../pre-start";
+// import "../pre-start";
 import { Sequelize, Dialect } from "sequelize";
 
 const sequelize = new Sequelize({
