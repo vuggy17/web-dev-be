@@ -89,8 +89,7 @@ app.use((err: HttpError, req: Request, res: Response, next: NextFunction) => {
   }
 });
 
-if (process.env.SYNC_DATABASE){
-  sequelize.sync({ alter: true });
-}
+// if (process.env.SYNC_DATABASE){
+// }
 
 export default app;

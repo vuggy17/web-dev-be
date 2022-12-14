@@ -30,9 +30,10 @@ class AdminDao {
     };
 
     const res: any = await sequelize.query(`
-    SELECT * 
-    FROM Orders 
-    WHERE MONTH(createdAt) = ${(new Date().getMonth() + 1)}`, { type: QueryTypes.SELECT });
+    SELECT *
+    FROM Orders
+    WHERE  EXTRACT(MONTH FROM createdAt) = ${(new Date().getMonth() + 1)}`
+    , { type: QueryTypes.SELECT });
 
     const orders: OrderInstance[] = res;
     orders.forEach(order => {
