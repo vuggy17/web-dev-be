@@ -84,9 +84,9 @@
     "moment": "^2.29.1",
     "morgan": "^1.10.0",
     "multer": "^1.4.2",
-    "mysql2": "^2.2.5",
     "nodemailer": "^6.6.5",
     "pdfkit": "^0.12.3",
+    "pg": "^8.8.0",
     "sequelize": "^6.6.5",
     "ts-jest": "^27.0.7",
     "url-slug": "^3.0.2"
