@@ -7,9 +7,7 @@ const sequelize = new Sequelize({
   database: String(process.env.DB_NAME),
   username: String(process.env.DB_USERNAME),
   password: String(process.env.DB_PASSWORD),
-  dialect: "mysql",
+  dialect: "postgres",
 });
-
-// sequelize.sync({ alter: true, force: false });
 
 export { Sequelize, sequelize };

@@ -13,11 +13,10 @@ import logger from "@shared/Logger";
 import swaggerUi from "swagger-ui-express";
 import YAML from "yamljs";
 
-import cors, { CorsOptions } from "cors";
+import cors from "cors";
 import { sequelize } from "./models";
 import HttpError from "./helper/iHttpError";
 import { badRequest } from "@shared/constants";
-import createInvoice from "@helper/invoice/generateInvoice";
 
 const app = express();
 const { BAD_REQUEST } = StatusCodes;
@@ -90,6 +89,8 @@ app.use((err: HttpError, req: Request, res: Response, next: NextFunction) => {
   }
 });
 
-// sequelize.sync({ alter: true });
-// Export express instance
+if (process.env.SYNC_DATABASE){
+  sequelize.sync({ alter: true });
+}
+
 export default app;
