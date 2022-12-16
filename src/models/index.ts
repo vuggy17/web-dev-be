@@ -10,6 +10,4 @@ const sequelize = new Sequelize({
   password: String(process.env.DB_PASSWORD),
   dialect: "postgres",
 });
-sequelize.sync({ alter: true,force:true });
-
 export { Sequelize, sequelize };
