@@ -38,10 +38,9 @@ if (process.env.NODE_ENV === "development") {
 // Security
 if (process.env.NODE_ENV === "production") {
   app.use(helmet());
-  const whitelist = ["*"];
   app.use(
     cors({
-      origin: whitelist,
+      origin: "*",
     })
   );
 }
