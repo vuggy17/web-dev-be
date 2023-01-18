@@ -3,7 +3,7 @@ info:
   description: "Api document for beauti-blog project."
   version: "1.0.0"
   title: "Swagger Beauti Shop"
-host: "45.119.85.106:8080"
+host: "localhost:3001"
 basePath: "/api"
 
 securityDefinitions:

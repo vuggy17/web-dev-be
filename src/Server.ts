@@ -20,6 +20,9 @@ import { badRequest } from "@shared/constants";
 
 const app = express();
 const { BAD_REQUEST } = StatusCodes;
+const isDev = process.env.NODE_ENV !== "production"
+
+console.log('server mode: ', isDev ? 'Dev': "Prod" )
 
 /************************************************************************************
  *                              Set basic express settings
@@ -30,7 +33,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // Show routes called in console during development
-if (process.env.NODE_ENV === "development") {
+if (isDev) {
   app.use(morgan("dev"));
   app.use(cors());
 }
@@ -58,7 +61,7 @@ const staticDir = path.join(__dirname, "public");
 app.use(express.static(staticDir));
 app.use("/upload", express.static(path.join(__dirname, "../upload")));
 
-if (process.env.NODE_ENV === "development") {
+if (isDev) {
   const swaggerDocument = YAML.load(
     path.join(__dirname, "/shared/swagger.yaml")
   );
