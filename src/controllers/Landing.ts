@@ -212,6 +212,8 @@ export async function getProductRelateToBlog(
   }
 }
 
+type SortType = "price"  |  "name"
+type SortDirection =  "DESC" | "ASC"
 export async function searchProduct(
   req: Request,
   res: Response,
@@ -220,14 +222,44 @@ export async function searchProduct(
   try {
     const query = String(req.query.query ?? "");
     const categoryQuery = String(req.query.category ?? "");
-    let list = [];
-    if (categoryQuery == "") {
-      list = await productDao.searchPublic(query);
-      res.json(list);
-    } else {
-      list = await productDao.findAllProductOfCategory(categoryQuery);
-      res.json(list);
+
+    const filter = {
+       prices: req.query.priceStart && req.query.priceEnd ? {
+        start: parseInt(req.query.priceStart as string),
+        end:parseInt(req.query.priceEnd as string),
+      }:undefined,
+      categories :undefined  as any,
     }
+    const sort = req.query.sort ? req.query.sort as SortType: undefined;
+    const sortType = req.query.sortType ?  req.query.sortType as SortDirection:undefined;
+    const page = req.query.page ?  parseInt(req.query.page as string):undefined;
+    const maxPage = req.query.maxPage ?  parseInt(req.query.maxPage as string) : undefined;
+    if (categoryQuery != ""){
+      filter.categories = await productCategory.findAllRelateCategories(categoryQuery).then((c)=> {
+        return c.length > 0 ?c.map(cata=>cata.id): undefined
+      })
+      console.log("filter.categories",filter.categories,categoryQuery);
+
+    }
+
+   const list =  await productDao.findProduct({
+      filter:filter,
+      sort:sort,
+      sortType:sortType,
+      pagination:{
+        page:page as number,
+        maxPage:maxPage as number
+      },
+      search: query ,
+    })
+    // if (categoryQuery == "") {
+    //   list = await productDao.searchPublic(query);
+    //   res.json(list);
+    // } else {
+    // list = await productDao.findAllProductOfCategory(categoryQuery);
+    //   res.json(list);
+    // }
+    res.json(list);
   } catch (err) {
     next(err);
   }
