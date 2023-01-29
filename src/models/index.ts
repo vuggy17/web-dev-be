@@ -10,6 +10,6 @@ const sequelize = new Sequelize({
   password: String(process.env.DB_PASSWORD),
   dialect: "mysql",
 });
-// sequelize.sync({ alter: true,force:true });
 
+// sequelize.sync({ alter: true,force:true });
 export { Sequelize, sequelize };
