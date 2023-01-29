@@ -81,7 +81,7 @@ class ProductCategoryDao {
   }
 
   public async search(query: string): Promise<ProductCategoryInstance[]> {
-    let list = await ProductCategory.findAll({
+    const list = await ProductCategory.findAll({
       where: {
         name: { [Op.like]: `%${query}%` },
       },
@@ -91,7 +91,7 @@ class ProductCategoryDao {
   }
 
   public async find(query: any): Promise<ProductCategoryInstance> {
-    let category = await ProductCategory.findOne({
+    const category = await ProductCategory.findOne({
       where: {
         [Op.or]: [{ id: query }, { path: query }],
       },
@@ -105,7 +105,7 @@ class ProductCategoryDao {
   public async findAllChild(
     parent: ProductCategoryInstance
   ): Promise<ProductCategoryInstance[]> {
-    let returnList = [parent];
+    const returnList = [parent];
     let newList = [];
     let currentI = 0;
     do {
@@ -187,6 +187,24 @@ class ProductCategoryDao {
 
     if (newRank) await category.update({ order: newRank });
     return category;
+  }
+  public async findAllRelateCategories(_search:string){
+    let listCategory = [];
+    const category = await ProductCategory.findOne({
+      where: {
+        [Op.or]: [{ id: _search }, { path: _search }],
+      },
+    });
+    console.log("cate",category);
+
+    if (!category) return [];
+
+    if (category.parent_id == null) {
+      listCategory = await this.findAllChild(category);
+    } else {
+      listCategory.push(category);
+    }
+    return listCategory;
   }
 }
 

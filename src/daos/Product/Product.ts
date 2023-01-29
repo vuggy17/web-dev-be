@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/require-await */
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import MediaDao from "@daos/Media/MediaDao";
 import HttpError from "@helper/iHttpError";
 import { notFound } from "@shared/constants";
@@ -113,7 +116,7 @@ class ProductDao {
   }
 
   public async find(query: string): Promise<ProductInstance> {
-    let product = await Product.scope([
+    const product = await Product.scope([
       "withCategory",
       "withVariant",
       "withMedia",
@@ -129,7 +132,7 @@ class ProductDao {
   }
 
   public async findPublic(query: string): Promise<ProductInstance> {
-    let product = await Product.scope("public").findOne({
+    const product = await Product.scope("public").findOne({
       where: {
         [Op.or]: [{ id: query }, { path: query }],
       },
@@ -145,7 +148,7 @@ class ProductDao {
   ): Promise<ProductInstance[]> {
     let listCategory = [];
     let listProduct: ProductInstance[] = [];
-    let category = await productCategoryDao.find(category_query);
+    const category = await productCategoryDao.find(category_query);
     if (!category) throw new HttpError(StatusCodes.NOT_FOUND, notFound);
 
     if (category.parent_id == null) {
@@ -174,8 +177,8 @@ class ProductDao {
   }
 
   public async updateMedia(query: string, newList: number[]): Promise<void> {
-    let listToRemove: number[] = [];
-    let listToAdd: number[] = [];
+    const listToRemove: number[] = [];
+    const listToAdd: number[] = [];
 
     const product = await Product.findOne({
       where: {
@@ -243,6 +246,78 @@ class ProductDao {
       },
     });
   }
+
+  public async findProduct(_:{
+    filter : {
+      prices?:{
+        start: number,
+        end:number,
+      }
+      categories?:string[],
+    },
+    sort?:"price" | "name",
+    sortType?:"ASC" | "DESC",
+    pagination:{
+      page?:number,
+      maxPage?:number,
+    },
+    search?: string
+  }): Promise<ProductInstance[]> {
+    let wherePharse = { };
+
+    if (_.search && _.search.trim()) {
+      wherePharse= {
+        name: {
+          [Op.like]: `%${_.search}%`,
+        },
+      }
+    }
+    if (_.filter){
+      if (_.filter.prices){
+        wherePharse = {
+          ...wherePharse,
+          price: {
+            [Op.between]: [_.filter.prices.start, _.filter.prices.end],
+          },
+        }
+      }
+      if (_.filter.categories){
+        wherePharse = {
+          ...wherePharse,
+          category_id: {
+            [Op.in]: _.filter.categories,
+          },
+        }
+      }
+    }
+    const orderPharse: [['name'|'price', 'ASC'|'DESC']?]  = []
+    if (_.sort && _.sortType){
+      orderPharse.push([_.sort, _.sortType])
+    }
+    const pagination:{
+      offset?:number,
+      limit?:number,
+    } = {
+    }
+    if (_.pagination.maxPage && _.pagination.page){
+      const {page, maxPage} = _.pagination
+      pagination.offset = (page - 1) * maxPage
+      pagination.limit = maxPage
+    }
+    console.log({
+      where: wherePharse,
+      order: orderPharse as any,
+      ...pagination
+    });
+    console.log(wherePharse);
+
+    return Product.scope("public").findAll({
+      where: wherePharse,
+      order: orderPharse as any,
+      ...pagination
+    });
+  }
+
 }
 
 export default ProductDao;
