@@ -1,0 +1,42 @@
+LOAD DATABASE
+     FROM      mysql://root@localhost/beauti-blog
+     INTO postgresql://localhost:5432/beauti-blog
+
+ WITH include drop, create tables, create indexes, reset sequences,
+      workers = 8, concurrency = 1,
+      multiple readers per thread, rows per range = 50000
+
+  SET PostgreSQL PARAMETERS
+      maintenance_work_mem to '128MB',
+      work_mem to '12MB',
+      search_path to 'sakila, public, "$user"'
+
+  SET MySQL PARAMETERS
+      net_read_timeout  = '120',
+      net_write_timeout = '120'
+
+ CAST type bigint when (= precision 20) to bigserial drop typemod,
+      type date drop not null drop default using zero-dates-to-null,
+      -- type tinyint to boolean using tinyint-to-boolean,
+      type year to integer
+
+ MATERIALIZE VIEWS film_list, staff_list
+
+ -- INCLUDING ONLY TABLE NAMES MATCHING ~/film/, 'actor'
+ -- EXCLUDING TABLE NAMES MATCHING ~<ory>
+ -- DECODING TABLE NAMES MATCHING ~/messed/, ~/encoding/ AS utf8
+ -- ALTER TABLE NAMES MATCHING 'film' RENAME TO 'films'
+ -- ALTER TABLE NAMES MATCHING ~/_list$/ SET SCHEMA 'mv'
+
+ ALTER TABLE NAMES MATCHING ~/_list$/, 'sales_by_store', ~/sales_by/
+  SET SCHEMA 'mv'
+
+ ALTER TABLE NAMES MATCHING 'film' RENAME TO 'films'
+ ALTER TABLE NAMES MATCHING ~/./ SET (fillfactor='40')
+
+ ALTER SCHEMA 'sakila' RENAME TO 'pagila'
+
+ BEFORE LOAD DO
+   $$ create schema if not exists pagila; $$,
+   $$ create schema if not exists mv;     $$,
+   $$ alter database sakila set search_path to pagila, mv, public; $$;

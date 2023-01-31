@@ -88,12 +88,8 @@
     "nodemailer": "^6.6.5",
     "pdfkit": "^0.12.3",
     "pg": "^8.8.0",
-<<<<<<< Updated upstream
-    "sequelize": "^6.27.0",
-=======
     "pg-hstore": "^2.3.4",
     "sequelize": "^6.6.5",
->>>>>>> Stashed changes
     "ts-jest": "^27.0.7",
     "url-slug": "^3.0.2"
   },

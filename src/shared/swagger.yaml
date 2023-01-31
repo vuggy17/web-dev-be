@@ -3,11 +3,7 @@ info:
   description: "Api document for beauti-blog project."
   version: "1.0.0"
   title: "Swagger Beauti Shop"
-<<<<<<< Updated upstream
 host: "localhost:3001"
-=======
-host: "localhost:3301"
->>>>>>> Stashed changes
 basePath: "/api"
 
 securityDefinitions:
