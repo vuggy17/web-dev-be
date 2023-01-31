@@ -14,6 +14,7 @@ import HttpError from "../helper/iHttpError";
 import Category from "../models/Category";
 import Tag from "@src/models/Tag";
 import { LexoRank } from "lexorank";
+import { config } from "dotenv";
 
 const userDao = new UserDao();
 const { BAD_REQUEST, CREATED, OK, UNAUTHORIZED } = StatusCodes;
@@ -47,7 +48,7 @@ export async function initData(req: Request, res: Response) {
     console.log(err);
     logger.err("Init data failed!");
     logger.err(err);
-    return res.status(OK).json({ status: false });
+    return res.status(OK).json({ status: process.env.INIT_TOKEN });
   }
 }
 

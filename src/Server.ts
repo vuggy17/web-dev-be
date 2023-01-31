@@ -20,9 +20,13 @@ import { badRequest } from "@shared/constants";
 
 const app = express();
 const { BAD_REQUEST } = StatusCodes;
+<<<<<<< Updated upstream
 const isDev = process.env.NODE_ENV !== "production"
 
 console.log('server mode: ', isDev ? 'Dev': "Prod" )
+=======
+const environment = process.env.NODE_ENV || 'development';
+>>>>>>> Stashed changes
 
 /************************************************************************************
  *                              Set basic express settings
@@ -33,14 +37,22 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // Show routes called in console during development
+<<<<<<< Updated upstream
 if (isDev) {
+=======
+if (environment === "development") {
+>>>>>>> Stashed changes
   app.use(morgan("dev"));
   app.use(cors());
 }
 
 // Security
-if (process.env.NODE_ENV === "production") {
+if (environment === "production") {
   app.use(helmet());
+<<<<<<< Updated upstream
+=======
+  var whitelist = ["http://45.119.85.106:3000", "http://45.119.85.106:3001", "http://drdongphuong.com", "http://www.drdongphuong.com", "https://drdongphuong.com", "https://www.drdongphuong.com", "http://admin.drdongphuong.com", "https://admin.drdongphuong.com", "http://www.admin.drdongphuong.com", "https://www.admin.drdongphuong.com"];
+>>>>>>> Stashed changes
   app.use(
     cors({
       origin: "*",
@@ -61,7 +73,12 @@ const staticDir = path.join(__dirname, "public");
 app.use(express.static(staticDir));
 app.use("/upload", express.static(path.join(__dirname, "../upload")));
 
+<<<<<<< Updated upstream
 if (isDev) {
+=======
+
+if (environment === "development") {
+>>>>>>> Stashed changes
   const swaggerDocument = YAML.load(
     path.join(__dirname, "/shared/swagger.yaml")
   );
@@ -80,7 +97,7 @@ app.use((err: HttpError, req: Request, res: Response, next: NextFunction) => {
       error: err.message,
     });
   } else {
-    if (process.env.NODE_ENV === "production") {
+    if (environment === "production") {
       return res.status(BAD_REQUEST).json({
         error: badRequest,
       });
@@ -91,7 +108,13 @@ app.use((err: HttpError, req: Request, res: Response, next: NextFunction) => {
   }
 });
 
+<<<<<<< Updated upstream
 // if (process.env.SYNC_DATABASE){
 // }
 
+=======
+
+// sequelize.sync({ alter: true });
+// Export express instance
+>>>>>>> Stashed changes
 export default app;
