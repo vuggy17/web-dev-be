@@ -14,6 +14,8 @@ export interface SendMailInterface {
   content: { key: string; value: string }[];
 }
 
+console.log("user email ", process.env.MAIL_USER);
+console.log("user pass ", process.env.MAIL_PASS);
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
